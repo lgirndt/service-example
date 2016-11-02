@@ -11,7 +11,31 @@ def tomcatVersion = '8.5.6'
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
-//    compile "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
 
     testCompile 'junit:junit:4.12'
 }
+
+task copyDeps(type:Copy, dependsOn: assemble) {
+    from configurations.compile
+    into "${buildDir}/deps"
+}
+
+build.dependsOn copyDeps
+
+task buildImage(type:Exec, dependsOn: copyDeps) {
+    commandLine 'docker', 'build', '-t', project.name, '.'
+}
+
+task run(type:Exec, dependsOn: buildImage) {
+    commandLine 'docker','run','-t', '-p', '8080:8080','-d', '--name', project.name, project.name + ":latest"
+}
+
+task stopContainer(type:Exec) {
+    commandLine 'docker','stop',project.name
+}
+
+task stop(type:Exec, dependsOn: stopContainer) {
+    commandLine 'docker','rm',project.name
+}
+
+build.dependsOn buildImage

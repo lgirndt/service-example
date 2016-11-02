@@ -1,0 +1,41 @@
+sourceSets {
+    integration {
+        java.srcDir 'src/integration/java'
+        resources.srcDir 'src/integration/resources'
+    }
+}
+
+configurations {
+    integrationCompile.extendsFrom compile, testCompile
+    integrationRuntime.extendsFrom runtime, integrationCompile, testRuntime
+}
+
+task integrationTest(type: Test) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = 'Runs the integration tests.' 
+
+    maxHeapSize = '1024m' 
+
+    testClassesDir = sourceSets.integration.output.classesDir
+    classpath = sourceSets.integration.runtimeClasspath 
+
+    binResultsDir = file("$buildDir/integration-test-results/binary/integTest")
+
+    reports { 
+        html.destination = "$buildDir/reports/integration-test"
+        junitXml.destination = "$buildDir/integration-test-results"
+    }
+
+    mustRunAfter tasks.test 
+}
+
+check.dependsOn integrationTest 
+
+idea {
+    module {
+        testSourceDirs += file('src/integration/java')
+        // put additional dependencies on the classpath
+        // scopes.TEST.plus += configurations.integrationCompile
+        // scopes.TEST.plus += configurations.integrationRuntime
+    }
+}

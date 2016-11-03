@@ -11,6 +11,12 @@ def tomcatVersion = '8.5.6'
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
+    compile "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+    compile "org.apache.tomcat:tomcat-jasper:${tomcatVersion}"
+
+    compile 'org.springframework:spring-context:4.3.3.RELEASE'
+    compile 'org.springframework:spring-web:4.3.3.RELEASE'
+    compile 'org.springframework:spring-webmvc:4.3.3.RELEASE'
 
     testCompile 'junit:junit:4.12'
 }

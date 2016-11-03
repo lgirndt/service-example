@@ -1,0 +1,24 @@
+task copyDeps(type:Copy, dependsOn: assemble) {
+    from configurations.compile
+    into "${buildDir}/deps"
+}
+
+build.dependsOn copyDeps
+
+task buildImage(type:Exec, dependsOn: copyDeps) {
+    commandLine 'docker', 'build', '-t', project.name, '.'
+}
+
+build.dependsOn buildImage
+
+task start(type:Exec, dependsOn: buildImage) {
+    commandLine 'docker-compose',
+            '-f', 'docker-compose.yml',
+            '-f', 'docker-compose.dev.yml',
+            'up', '-d','--no-build'
+}
+
+task stop(type:Exec) {
+    commandLine 'docker-compose', 'down'
+}
+

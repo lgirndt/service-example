@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply from: "$rootDir/gradle/integrationTest.gradle"
+apply from: "$rootDir/gradle/docker.gradle"
 
 repositories {
     mavenCentral()
@@ -21,26 +22,3 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-task copyDeps(type:Copy, dependsOn: assemble) {
-    from configurations.compile
-    into "${buildDir}/deps"
-}
-
-build.dependsOn copyDeps
-
-task buildImage(type:Exec, dependsOn: copyDeps) {
-    commandLine 'docker', 'build', '-t', project.name, '.'
-}
-
-task start(type:Exec, dependsOn: buildImage) {
-    commandLine 'docker-compose',
-            '-f', 'docker-compose.yml',
-            '-f', 'docker-compose.dev.yml',
-            'up', '-d','--no-build'
-}
-
-task stop(type:Exec) {
-    commandLine 'docker-compose', 'down'
-}
-
-build.dependsOn buildImage

@@ -3,17 +3,16 @@ MAINTAINER lars
 
 ENV HOME=/home/service \
     APP_DIR=app \
-    WEBAPP_DIR=app/webapp
+    WEBAPP_DIR=app/webapp \
+    JVM_DEBUG=""
 
 RUN adduser -D service && addgroup service service
 USER service
 WORKDIR $HOME
 
-EXPOSE 8080
+EXPOSE 8080 5005
 
-CMD ["java", \
-     "-classpath","app/classes:app/libs/*", \
-     "de.girndt.Main"]
+CMD java -classpath 'app/classes:app/libs/*' $JVM_DEBUG de.girndt.Main
 
 # Order in which changes are expected
 COPY build/deps $APP_DIR/libs

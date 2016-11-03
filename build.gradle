@@ -33,7 +33,11 @@ task buildImage(type:Exec, dependsOn: copyDeps) {
 }
 
 task run(type:Exec, dependsOn: buildImage) {
-    commandLine 'docker','run','-t', '-p', '8080:8080','-d', '--name', project.name, project.name + ":latest"
+    commandLine 'docker','run','-t',
+            '-e','JVM_DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
+            '-p', '8080:8080',
+            '-p', '5005:5005',
+            '-d', '--name', project.name, project.name + ":latest"
 }
 
 task stopContainer(type:Exec) {

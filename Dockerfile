@@ -12,7 +12,9 @@ WORKDIR $HOME
 
 EXPOSE 8080 5005
 
-CMD java -classpath 'app/classes:app/libs/*' $JVM_DEBUG de.girndt.Main
+#CMD java -classpath 'app/classes:app/libs/*' $JVM_DEBUG de.girndt.Main
+ENTRYPOINT ["java","-classpath", "app/classes:app/libs/*"]
+CMD ["de.girndt.Main"]
 
 # Order in which changes are expected
 COPY build/deps $APP_DIR/libs

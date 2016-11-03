@@ -1,0 +1,8 @@
+version: '2'
+services:
+  service:
+    ports:
+    - "8080:8080"
+    - "5005:5005"
+    command:
+      ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005", "de.girndt.Main"]

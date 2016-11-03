@@ -32,20 +32,15 @@ task buildImage(type:Exec, dependsOn: copyDeps) {
     commandLine 'docker', 'build', '-t', project.name, '.'
 }
 
-task run(type:Exec, dependsOn: buildImage) {
-    commandLine 'docker','run','-t',
-            '-e','JVM_DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005',
-            '-p', '8080:8080',
-            '-p', '5005:5005',
-            '-d', '--name', project.name, project.name + ":latest"
+task start(type:Exec, dependsOn: buildImage) {
+    commandLine 'docker-compose',
+            '-f', 'docker-compose.yml',
+            '-f', 'docker-compose.dev.yml',
+            'up', '-d','--no-build'
 }
 
-task stopContainer(type:Exec) {
-    commandLine 'docker','stop',project.name
-}
-
-task stop(type:Exec, dependsOn: stopContainer) {
-    commandLine 'docker','rm',project.name
+task stop(type:Exec) {
+    commandLine 'docker-compose', 'down'
 }
 
 build.dependsOn buildImage

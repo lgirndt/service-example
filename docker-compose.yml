@@ -1,0 +1,8 @@
+version: '2'
+services:
+  service:
+    build: .
+    image: service
+    container_name: service
+    ports:
+    - "8080"

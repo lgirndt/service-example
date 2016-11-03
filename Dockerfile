@@ -9,12 +9,14 @@ RUN adduser -D service && addgroup service service
 USER service
 WORKDIR $HOME
 
-COPY build/classes/main $APP_DIR/classes
-COPY build/deps $APP_DIR/libs
-COPY src/main/webapp $WEBAPP_DIR
-
 EXPOSE 8080
 
 CMD ["java", \
      "-classpath","app/classes:app/libs/*", \
      "de.girndt.Main"]
+
+# Order in which changes are expected
+COPY build/deps $APP_DIR/libs
+COPY src/main/webapp $WEBAPP_DIR
+COPY build/classes/main $APP_DIR/classes
+

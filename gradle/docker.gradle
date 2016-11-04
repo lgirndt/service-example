@@ -22,3 +22,48 @@ task stop(type:Exec) {
     commandLine 'docker-compose', 'down'
 }
 
+def exec(args) {
+    doExec(args,System.out,System.err)
+}
+
+def execToStr(args) {
+    def outStr = new StringBuffer()
+    doExec(args,outStr,System.err)
+    return outStr.toString();
+}
+
+def doExec(args,out,err) {
+    def proc = new ProcessBuilder().command(args).start()
+    proc.consumeProcessOutput(out, err)
+    proc.waitForOrKill(60000)
+    def ret = proc.exitValue()
+    if(ret!=0) {
+        throw new GradleException("Exec failed with exit value ${ret}")
+    }
+}
+
+def composeName = 'integration-' + project.name
+
+integrationTest.doFirst {
+    exec(['docker-compose',
+            '-p', composeName,
+            '-f', 'docker-compose.yml',
+            'up', '-d','--no-build','--no-recreate'])
+
+    def hostPort = execToStr(['docker-compose',
+                                '-p',composeName,
+                                '-f', 'docker-compose.yml',
+                                'port','service','8080']).trim()
+
+    integrationTest {
+        environment "INTEGRATION_HOST_PORT", hostPort
+    }
+}
+
+task finalizeIntegrationTest << {
+    exec(['docker-compose',
+          '-p', composeName,
+          'down'])
+}
+
+integrationTest.finalizedBy finalizeIntegrationTest

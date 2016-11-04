@@ -20,5 +20,7 @@ dependencies {
     compile 'org.springframework:spring-webmvc:4.3.3.RELEASE'
 
     testCompile 'junit:junit:4.12'
+
+    testCompile 'io.rest-assured:rest-assured:3.0.1'
 }
 
